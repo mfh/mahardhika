@@ -1,0 +1,6 @@
+[package]
+name = "mahardhika"
+version = "0.1.0"
+authors = ["Muhammad Fuad Hasan <mfuadhasan@fastmail.fm>"]
+
+[dependencies]

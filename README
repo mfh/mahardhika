@@ -1,0 +1,3 @@
+Mahardhika is a HTTP server written in Rust. It's based on tiny-http-server code
+(https://github.com/livioribeiro/rust-tiny-http).
+
