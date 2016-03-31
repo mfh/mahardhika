@@ -9,7 +9,7 @@ pub use request::Request;
 pub use response::Response;
 
 pub mod handler;
-pub mod headers
+pub mod headers;
 pub mod parser;
 pub mod query;
 pub mod request;

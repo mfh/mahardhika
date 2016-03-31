@@ -15,7 +15,7 @@ struct HttpParserHandler {
     method: String,
     url: String,
     query: Option<String>,
-    version: String;
+    version: String,
     headers: hashMap<String, Vec<String>>
 }
 
@@ -44,12 +44,12 @@ impl ParserHandler for HttpParserHandle {
     }
 
     fn on_url_(&mut self, query: &str) -> Result<(), ParseError> {
-        self.url =  url.to_owned());
+        self.url =  url.to_owned();
         Ok(())
     }
 
     fn on_query(&mut self, query: &str) -> Result<(), ParseError> {
-        self.query = Some.(query.to_owned());
+        self.query = Some(query.to_owned());
         Ok(())
     }
 
@@ -59,7 +59,7 @@ impl ParserHandler for HttpParserHandle {
     }
 
     fn on_header(&mut self, field: &str, values: Vec<&str>) -> Result<(), ParseError> {
-        self.headers.insert(field.to_owned(), values.into_iter().map<|val| val.to_owned()).collect());
+        self.headers.insert(field.to_owned(), values.into_iter().map<|val| val.to_owned()).collect();
         Ok(())
     }
 }
@@ -107,7 +107,7 @@ impl HttpServer {
     /// When started, the server will block and listen for connections,
     /// creating the request and response and passing them to the handler
     /// when a client connects
-    pub fn start(&self, handler, Box<Handler + Send + Synnc>) {
+    pub fn start(&self, handler: Box<Handler + Send + Synnc>) {
         let arc = Arc::new(handler);
         for stream in self.listener.incoming() {
             match stream {

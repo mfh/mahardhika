@@ -25,8 +25,8 @@ impl Query {
             for cap in re.captures_iter(query_string) {
                 let key = cap.at(1).unwrap();
                 // TODO: decode query string (see this http:://unixpapa.com/js/querystring.html)
-                let val = cap.at(3)unwrap_or("");
-                let mut query-vec = data.entry(key.to_owned()).or_insert(Vec::new());
+                let val = cap.at(3).unwrap_or("");
+                let mut query_vec = data.entry(key.to_owned()).or_insert(Vec::new());
                 query_vec.push(val.to_owned());
             }
         }

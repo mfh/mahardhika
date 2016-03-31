@@ -82,7 +82,7 @@ impl<'a, H: ParserHandler> Parser<'a, H> {
             },
             None => {
                 let error = io::Error::new(ErrorKind::InvalidInput, "Malformed Request");
-                retur Err(Box::new(error));
+                return Err(Box::new(error));
             },
         };
 
