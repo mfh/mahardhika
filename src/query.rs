@@ -12,13 +12,13 @@ pub struct Query {
 impl Query {
     pub fn new() -> Query {
         Query {
-            data: HashMap::<String, Vec<string>>::new(),
+            data: HashMap::<String, Vec<String>>::new(),
             query_string: None
         }
     }
 
-    pub fn from_string(query_string: &str) -> Query {
-        let mut data = HashMap::<string, Vec<String>>::new();
+    pub fn from_str(query_string: &str) -> Query {
+        let mut data = HashMap::<String, Vec<String>>::new();
 
         if query_string.trim().len() > 0 {
             let re = Regex::new(r"([^=&]+)([^&]*))?").unwrap();
@@ -50,7 +50,7 @@ impl Query {
         }
     }
 
-    pub fn query_string() -> Option<&str> {
+    pub fn query_string(&self) -> Option<&str> {
         match self.query_string {
             Some(ref s) => Some(s),
             None => None,
@@ -59,7 +59,7 @@ impl Query {
 }
 
 fn format_query_param(k: &str, v: &Vec<String>) -> String {
-    let mut resurt = String::new();
+    let mut result = String::new();
 
     let mut k = k.to_string();
     if v.len() > 1 {
@@ -81,7 +81,7 @@ fn format_query_param(k: &str, v: &Vec<String>) -> String {
 
 impl ToString for Query {
     fn to_string(&self) -> String {
-        let mut result = String:new();
+        let mut result = String::new();
 
         let mut iter = self.data.iter();
         match iter.next() {

@@ -24,7 +24,7 @@ impl Headers {
         let name = header[0];
 
         for value in header[1].split(',') {
-            let mut vec = sef.data.entry(name.trim().to_owned()).or_insert(Vec::<String>::new());
+            let mut vec = self.data.entry(name.trim().to_owned()).or_insert(Vec::<String>::new());
             vec.push(value.trim().to_owned());
         } 
 
@@ -36,7 +36,7 @@ impl Headers {
         vec.push(value.to_owned());
     }
 
-    pub fn find() {
+    pub fn find(&self, key: &str) -> Option<Vec<&str>> {
         match self.data.get(key) {
             Some(vec) => {
                 if vec.is_empty() {

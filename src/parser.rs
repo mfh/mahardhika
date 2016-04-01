@@ -4,7 +4,7 @@ use std::fmt;
 use regex::Regex;
 use url::percent_encoding;
 
-#[derive(debug)]
+#[derive(Debug)]
 pub struct ParseError {
     description: String,
 }

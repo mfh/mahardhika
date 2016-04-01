@@ -1,1 +1,7 @@
+# Compiled files
+*.o
+*.so
+*.rlib
+
+# Build output
 target

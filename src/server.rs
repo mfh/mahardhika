@@ -16,10 +16,10 @@ struct HttpParserHandler {
     url: String,
     query: Option<String>,
     version: String,
-    headers: hashMap<String, Vec<String>>
+    headers: HashMap<String, Vec<String>>
 }
 
-impl HttpParserHandle {
+impl HttpParserHandler {
     pub fn build_request(&self, stream: &TcpStream) -> Request {
         let version_vec: Vec<&str> = self.version.split('.').collect();
         let http_version = (version_vec[0].parse().unwrap(), version_vec[1].parse().unwrap());
@@ -37,13 +37,13 @@ impl HttpParserHandle {
     }
 }
 
-impl ParserHandler for HttpParserHandle {
+impl ParserHandler for HttpParserHandler {
     fn on_method(&mut self, method: &str) -> Result<(), ParseError> {
         self.method = method.to_owned();
         Ok(())
     }
 
-    fn on_url_(&mut self, query: &str) -> Result<(), ParseError> {
+    fn on_url(&mut self, url: &str) -> Result<(), ParseError> {
         self.url =  url.to_owned();
         Ok(())
     }
@@ -59,7 +59,7 @@ impl ParserHandler for HttpParserHandle {
     }
 
     fn on_header(&mut self, field: &str, values: Vec<&str>) -> Result<(), ParseError> {
-        self.headers.insert(field.to_owned(), values.into_iter().map<|val| val.to_owned()).collect();
+        self.headers.insert(field.to_owned(), values.into_iter().map(|val| val.to_owned()).collect());
         Ok(())
     }
 }
@@ -107,17 +107,17 @@ impl HttpServer {
     /// When started, the server will block and listen for connections,
     /// creating the request and response and passing them to the handler
     /// when a client connects
-    pub fn start(&self, handler: Box<Handler + Send + Synnc>) {
+    pub fn start(&self, handler: Box<Handler + Send + Sync>) {
         let arc = Arc::new(handler);
         for stream in self.listener.incoming() {
             match stream {
                 Ok(mut stream) => {
                     let handler = arc.clone();
 
-                    self.theradpool.execute(move || {
+                    self.threadpool.execute(move || {
                         let mut http_parser = HttpParserHandler::default();
 
-                        Parser::request(&mut http_parse).parse(&mut stream).unwrap_or_else(|e| {
+                        Parser::request(&mut http_parser).parse(&mut stream).unwrap_or_else(|e| {
                             println!("Error parsing request: '{}'", e);
                         });
 

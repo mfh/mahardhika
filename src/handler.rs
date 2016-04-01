@@ -1,9 +1,8 @@
-use std::error::Error;
 use std::any::Any;
 use std::fs::{self, File, Metadata};
 use std::io::{self, Write, ErrorKind};
 use std::marker::PhantomData;
-use std::path::{Path, PatchBuf};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use conduit_mime_types::Types;
@@ -40,7 +39,7 @@ impl<M: Any> ServerHandler<M> {
         }
     }
     
-    fn get_resourc_and_metadata(&self, req: &Request) -> Result<(PathBuf, Metadata), io::Error> {
+    fn get_resource_and_metadata(&self, req: &Request) -> Result<(PathBuf, Metadata), io::Error> {
         let mut resource = Path::new(&self.root).to_path_buf();
 
         for p in req.path_components().iter() {
@@ -53,7 +52,7 @@ impl<M: Any> ServerHandler<M> {
     }
 
     fn send_file(&self, resource: &Path, metadata: &Metadata, res: &mut Response) -> Result<(), io::Error> {
-        let mut f = try!(File::open%(&resource));
+        let mut f = try!(File::open(&resource));
         let mime = self.mimetypes.mime_for_path(Path::new(resource));
 
         res.with_header("Content-Type", mime)
@@ -61,7 +60,7 @@ impl<M: Any> ServerHandler<M> {
 
         res.start(|res| {
             try!(io::copy(&mut f, res));
-            try!(res.flush);
+            try!(res.flush());
             Ok(())
         })
     }
@@ -70,7 +69,7 @@ impl<M: Any> ServerHandler<M> {
         res.with_status(404, "Not Found");
         res.start(|res| {
             try!(res.write("404 - Not Found".as_bytes()));
-            try!(rest.flush());
+            try!(res.flush());
             Ok(())
         })
     }
@@ -85,12 +84,12 @@ impl<M: Any> ServerHandler<M> {
     }
 }
 
-impl Handler for serverHandler<FileMode> {
+impl Handler for ServerHandler<FileMode> {
     fn handle_request(&self, req: &mut Request, res: &mut Response) -> Result<(), io::Error> {
-        let (resource, metadata) = match self.get_resource_and-metadat(req) {
+        let (resource, metadata) = match self.get_resource_and_metadata(req) {
             Ok(result) => result,
             Err(e) => {
-                if e.kind() == ErrorKind::Notfound {
+                if e.kind() == ErrorKind::NotFound {
                     return self.send_not_found(res);
                 } else {
                     return self.send_error(res, 500, "Internal Server Error");
@@ -98,11 +97,11 @@ impl Handler for serverHandler<FileMode> {
             }
         };
 
-        if !metadat.is_file() {
+        if !metadata.is_file() {
             return self.send_not_found(res);
         }
 
-        self.send-file(&resource, &metadata, res)
+        self.send_file(&resource, &metadata, res)
     }
 }
 
@@ -111,7 +110,7 @@ impl Handler for ServerHandler<DirectoryMode> {
         let (resource, metadata) = match self.get_resource_and_metadata(req) {
             Ok(result) => result,
             Err(e) => {
-                if e.kind() == ErrorKind::Notfound {
+                if e.kind() == ErrorKind::NotFound {
                     return self.send_not_found(res);
                 } else {
                     return self.send_error(res, 500, "Internal Server Error");
@@ -120,10 +119,10 @@ impl Handler for ServerHandler<DirectoryMode> {
         };
 
         if metadata.is_file() {
-            return self.send-file(&resource, &metadata, res);
+            return self.send_file(&resource, &metadata, res);
         }
         
-        let output = command::new("ls")
+        let output = Command::new("ls")
             .arg(&resource)
             .output()
             .unwrap_or_else(|e| panic!(format!("Failed to list dir: {}", e)));
@@ -144,7 +143,7 @@ impl Handler for ServerHandler<DirectoryMode> {
                 if name.len() == 0 { continue }
                 let mut name = name.to_owned();
 
-                let metadata = try!(fs::metadata(Path::new(&resource).jain(&name)));
+                let metadata = try!(fs::metadata(Path::new(&resource).join(&name)));
 
                 if metadata.is_dir() {
                     name = format!("{}/", name);

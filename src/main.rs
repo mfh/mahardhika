@@ -27,7 +27,7 @@ fn main() {
     let handler: Box<Handler + Send + Sync>;
 
     if dir_mode {
-        handler = Box::new(ServerHandle::<DirectoryMode>::new(&path));
+        handler = Box::new(ServerHandler::<DirectoryMode>::new(&path));
     } else {
         handler = Box::new(ServerHandler::<FileMode>::new(&path));
     }

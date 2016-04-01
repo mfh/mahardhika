@@ -51,7 +51,7 @@ impl Request {
     }
 
     pub fn host(&self) -> SocketAddr {
-        self.stream.local_add().unwrap()
+        self.stream.local_addr().unwrap()
     }
 
     pub fn path(&self) -> &str {
