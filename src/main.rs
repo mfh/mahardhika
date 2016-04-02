@@ -15,7 +15,7 @@ fn main() {
 
     {
         let mut parser = ArgumentParser::new();
-        parser.set_description("mahardhika server");
+        parser.set_description("mahardhika http server");
         parser.refer(&mut addr).add_option(&["-a", "--addr"], Store, "Address to listen");
         parser.refer(&mut dir_mode).add_option(&["-d", "--dir"], StoreTrue, "Enable directory listing within root");
         parser.parse_args_or_exit();
@@ -35,4 +35,3 @@ fn main() {
     let server: HttpServer = HttpServer::new(&addr, 4usize);
     server.start(handler);
 }
-

@@ -16,7 +16,7 @@ struct HttpParserHandler {
     url: String,
     query: Option<String>,
     version: String,
-    headers: HashMap<String, Vec<String>>
+    headers: HashMap<String, Vec<String>>,
 }
 
 impl HttpParserHandler {
@@ -32,7 +32,7 @@ impl HttpParserHandler {
             http_version,
             Headers::with_data(self.headers.clone()),
             None,
-            stream
+            stream,
         )
     }
 }
@@ -44,7 +44,7 @@ impl ParserHandler for HttpParserHandler {
     }
 
     fn on_url(&mut self, url: &str) -> Result<(), ParseError> {
-        self.url =  url.to_owned();
+        self.url = url.to_owned();
         Ok(())
     }
 
@@ -64,7 +64,7 @@ impl ParserHandler for HttpParserHandler {
     }
 }
 
-/// Server that listen for connections on give addres
+/// Server that listen for connections on given address
 ///
 /// The server will listen for connections on the given address,
 /// create the request and response objects and pass them to the
@@ -74,8 +74,8 @@ impl ParserHandler for HttpParserHandler {
 ///
 /// ```
 /// use std::env;
-/// use http_server::HttpServer;
-/// use http_server::handler::{ServerHandler, FileMode};
+/// use mahardhika::HttpServer;
+/// use mahardhika::handler::{ServerHandler, FileMode};
 ///
 /// let root = env::home_dir().unwrap();
 /// let handler = ServerHandler::<FileMode>::new(&root);
@@ -86,7 +86,7 @@ impl ParserHandler for HttpParserHandler {
 pub struct HttpServer {
     addr: String,
     listener: TcpListener,
-    threadpool: ThreadPool
+    threadpool: ThreadPool,
 }
 
 impl HttpServer {
@@ -100,7 +100,6 @@ impl HttpServer {
             threadpool: ThreadPool::new(num_threads),
         }
     }
-
 
     /// Start the server with the given handler
     ///
@@ -118,16 +117,15 @@ impl HttpServer {
                         let mut http_parser = HttpParserHandler::default();
 
                         Parser::request(&mut http_parser).parse(&mut stream).unwrap_or_else(|e| {
-                            println!("Error parsing request: '{}'", e);
+                            println!("Erro parsing request: '{}'", e);
                         });
 
                         let mut request = http_parser.build_request(&stream);
                         let mut response = Response::from_stream(&stream).unwrap();
 
                         handler.handle_request(&mut request, &mut response).unwrap_or_else(|e| {
-                            println!("error handling request: '{}'", e);
+                            println!("Error handling request: '{}'", e);
                         });
-
                     });
                 },
                 Err(error) => println!("{:?}", error),
@@ -145,4 +143,3 @@ impl Drop for HttpServer {
         self.stop();
     }
 }
-

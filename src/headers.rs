@@ -26,7 +26,7 @@ impl Headers {
         for value in header[1].split(',') {
             let mut vec = self.data.entry(name.trim().to_owned()).or_insert(Vec::<String>::new());
             vec.push(value.trim().to_owned());
-        } 
+        }
 
         self
     }
@@ -78,7 +78,7 @@ impl ToString for Headers {
             for i in iter {
                 result.push_str(&format!(", {}", i));
             }
-            
+
             result.push_str("\r\n");
         }
 

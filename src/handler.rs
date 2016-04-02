@@ -38,7 +38,7 @@ impl<M: Any> ServerHandler<M> {
             _kind: PhantomData
         }
     }
-    
+
     fn get_resource_and_metadata(&self, req: &Request) -> Result<(PathBuf, Metadata), io::Error> {
         let mut resource = Path::new(&self.root).to_path_buf();
 
@@ -53,7 +53,7 @@ impl<M: Any> ServerHandler<M> {
 
     fn send_file(&self, resource: &Path, metadata: &Metadata, res: &mut Response) -> Result<(), io::Error> {
         let mut f = try!(File::open(&resource));
-        let mime = self.mimetypes.mime_for_path(Path::new(resource));
+        let mime = self.mimetypes.mime_for_path(Path::new(&resource));
 
         res.with_header("Content-Type", mime)
             .with_header("Content-Length", &metadata.len().to_string());
@@ -121,7 +121,7 @@ impl Handler for ServerHandler<DirectoryMode> {
         if metadata.is_file() {
             return self.send_file(&resource, &metadata, res);
         }
-        
+
         let output = Command::new("ls")
             .arg(&resource)
             .output()
@@ -132,13 +132,13 @@ impl Handler for ServerHandler<DirectoryMode> {
             s = String::from_utf8_lossy(&output.stdout).as_ref().to_owned();
         } else {
             s = String::from_utf8_lossy(&output.stderr).as_ref().to_owned();
-            panic!("rustc failed and stderr wass:\n{}", s);
+            panic!("rustc failed and stderr was:\n{}", s);
         }
 
         res.with_header("Content-Type", "text/html; charset=utf-8");
 
         res.start(|res| {
-            try!(res.write("<html><body<ul".as_bytes()));
+            try!(res.write("<html><body><ul>".as_bytes()));
             for name in s.split('\n') {
                 if name.len() == 0 { continue }
                 let mut name = name.to_owned();
@@ -154,11 +154,10 @@ impl Handler for ServerHandler<DirectoryMode> {
                 let path = perc_enc::percent_encode(
                     path.as_bytes(),
                     perc_enc::DEFAULT_ENCODE_SET
-                ); 
+                );
 
-                try!(res.write(format!("<li><a href=\"{0}\">{1}</a><li>", path,name).as_bytes()));
-            } 
-
+                try!(res.write(format!("<li><a href=\"{0}\">{1}</a></li>", path, name).as_bytes()));
+            }
             try!(res.write("</ul></body></html>".as_bytes()));
             try!(res.flush());
 
@@ -166,4 +165,3 @@ impl Handler for ServerHandler<DirectoryMode> {
         })
     }
 }
-

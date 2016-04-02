@@ -10,7 +10,7 @@ pub struct ParseError {
 }
 
 impl fmt::Display for ParseError {
-    fn fmt(&self, f: & mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.description)
     }
 }
@@ -22,7 +22,7 @@ impl Error for ParseError {
 }
 
 pub trait ParserHandler {
-    fn on_method(&mut self, _method: & str) -> Result<(), ParseError> { Ok(()) }
+    fn on_method(&mut self, _method: &str) -> Result<(), ParseError> { Ok(()) }
     fn on_url(&mut self, _url: &str) -> Result<(), ParseError> { Ok(()) }
     fn on_query(&mut self, _query: &str) -> Result<(), ParseError> { Ok(()) }
     fn on_http_version(&mut self, _version: &str) -> Result<(), ParseError> { Ok(()) }
@@ -56,7 +56,7 @@ impl<'a, H: ParserHandler> Parser<'a, H> {
         try!(self.handler.on_message_begin());
 
         let re = Regex::new(
-            r"^(?P<method>[A-Z]*?) (?P<url>[^\?]+)(\?(+P<query>[^#]+))? HTTP/(?P<version>\d\.\d)\r\n$"
+            r"^(?P<method>[A-Z]*?) (?P<url>[^\?]+)(\?(?P<query>[^#]+))? HTTP/(?P<version>\d\.\d)\r\n$"
         ).unwrap();
 
         match re.captures(&request_line) {
@@ -118,4 +118,3 @@ impl<'a, H: ParserHandler> Parser<'a, H> {
         Ok(())
     }
 }
-

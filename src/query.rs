@@ -21,10 +21,10 @@ impl Query {
         let mut data = HashMap::<String, Vec<String>>::new();
 
         if query_string.trim().len() > 0 {
-            let re = Regex::new(r"([^=&]+)([^&]*))?").unwrap();
+            let re = Regex::new(r"([^=&]+)(=([^&]*))?").unwrap();
             for cap in re.captures_iter(query_string) {
                 let key = cap.at(1).unwrap();
-                // TODO: decode query string (see this http:://unixpapa.com/js/querystring.html)
+                // TODO: Decode query string (see this http://unixpapa.com/js/querystring.html)
                 let val = cap.at(3).unwrap_or("");
                 let mut query_vec = data.entry(key.to_owned()).or_insert(Vec::new());
                 query_vec.push(val.to_owned());
@@ -75,7 +75,7 @@ fn format_query_param(k: &str, v: &Vec<String>) -> String {
     for i in iter {
         result.push_str(&format!("&{}={}", k, i));
     }
-    
+
     result
 }
 
@@ -96,4 +96,3 @@ impl ToString for Query {
         result
     }
 }
-

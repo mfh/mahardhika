@@ -23,7 +23,7 @@ impl Response {
         Ok(Response {
             http_version: "1.0".to_owned(),
             status: 200,
-            status_text: "Ok".to_owned(),
+            status_text: "OK".to_owned(),
             headers: Headers::new(),
             stream: BufWriter::new(stream),
             headers_written: false,
@@ -33,7 +33,7 @@ impl Response {
     pub fn http_version(&self) -> &str {
         self.http_version.as_ref()
     }
-    
+
     pub fn http_version_text(&self) -> String {
         let mut ver = "HTTP/".to_string();
         for c in self.http_version.chars() {
@@ -42,7 +42,7 @@ impl Response {
         ver
     }
 
-    pub fn with_http_version(&mut self, version: & str) -> &mut Self {
+    pub fn with_http_version(&mut self, version: &str) -> &mut Self {
         if self.headers_written {
             panic!("Cannot write header to started response")
         }
@@ -66,7 +66,7 @@ impl Response {
     }
 
     pub fn with_header(&mut self, name: &str, value: &str) -> &mut Self {
-        if self.headers_written{
+        if self.headers_written {
             panic!("Cannot write header to started response")
         }
         self.headers.insert(name, value);
@@ -95,4 +95,3 @@ impl Response {
         result
     }
 }
-

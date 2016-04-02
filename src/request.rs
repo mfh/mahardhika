@@ -7,7 +7,7 @@ use super::query::Query;
 #[allow(dead_code)]
 pub struct Request {
     http_version: (u16, u16),
-    method: String, 
+    method: String,
     scheme: String,
     path: Vec<String>,
     path_str: String,
@@ -23,20 +23,20 @@ impl Request {
                content_length: Option<u64>,
                stream: &TcpStream) -> Self {
 
-        let path = url[1..url.len()].split('/').map(|x| x.to_owned()).collect();
+       let path = url[1..url.len()].split('/').map(|x| x.to_owned()).collect();
 
-        Request {
-            http_version: version,
-            method: method.to_owned(),
-            scheme: scheme.to_owned(),
-            path: path,
-            path_str: url.to_owned(),
-            headers: headers,
-            query: query,
-            content_length: content_length,
-            stream: stream.try_clone().unwrap(),
-        }
-    }
+       Request {
+           http_version: version,
+           method: method.to_owned(),
+           scheme: scheme.to_owned(),
+           path: path,
+           path_str: url.to_owned(),
+           headers: headers,
+           query: query,
+           content_length: content_length,
+           stream: stream.try_clone().unwrap(),
+       }
+   }
 
     pub fn http_version(&self) -> (u16, u16) {
         self.http_version
@@ -82,4 +82,3 @@ impl Request {
         &mut self.stream
     }
 }
-
